@@ -3,10 +3,10 @@ package org.netty.proxy;
 import java.net.InetAddress;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.netty.encryption.CryptUtil;
 import org.netty.encryption.ICrypt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -29,7 +29,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
  */
 public class ClientProxyHandler extends ChannelInboundHandlerAdapter {
 
-	private static Log logger = LogFactory.getLog(ClientProxyHandler.class);
+	private static Logger logger = LoggerFactory.getLogger(ClientProxyHandler.class);
 	private ICrypt _crypt;
 	private AtomicReference<Channel> remoteChannel = new AtomicReference<>();
 	private ByteBuf clientCache;
@@ -102,14 +102,14 @@ public class ClientProxyHandler extends ChannelInboundHandlerAdapter {
 			remoteChannel.get().close();
 		}
 	}
-	
+
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 		ctx.close();
 		if (remoteChannel.get() != null) {
 			remoteChannel.get().close();
 		}
-		
+		clientCache.clear();
 		logger.error("ClientProxyHandler error", cause);
 	}
 }
